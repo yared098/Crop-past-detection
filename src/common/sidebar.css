@@ -1,0 +1,58 @@
+/* Sidebar.css */
+
+.sidebar-wrapper {
+    background-color: #80C855; /* Green background color */
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+    transition: 0.5s;
+    z-index: 1000;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar-heading {
+    text-align: center;
+}
+
+.sidebar-items {
+    padding-left: 0;
+    list-style: none;
+}
+
+.sidebar-items li {
+    margin-bottom: 1rem;
+}
+
+.sidebar-items li a {
+    display: block;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-items li a:hover {
+    background-color: #6fae4f;
+    border-radius: 4px;
+}
+
+.fixed-bottom-dropdown {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.fixed-bottom-dropdown a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.fixed-bottom-dropdown .dropdown-menu {
+    width: 100%;
+    text-align: left;
+}

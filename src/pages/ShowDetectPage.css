@@ -1,0 +1,34 @@
+.container-fluid {
+    padding: 0;
+}
+
+.row {
+    margin: 0;
+}
+
+.filter-sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+}
+
+.filter-sidebar h4 {
+    margin-bottom: 20px;
+}
+
+.filter-sidebar .form-control {
+    margin-bottom: 10px;
+}
+
+.filter-sidebar .btn {
+    margin-top: 10px;
+}
+
+.col-md-9 {
+    margin-right: 270px; /* Adjust according to the sidebar width */
+}
