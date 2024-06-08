@@ -2,6 +2,7 @@ import React from "react";
 import adminLayout from "../hoc/adminLayout";
 import { db } from "../firebase-config";
 import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import logo1 from './../assets/images/logo1.png'; // Adjust the path as needed
 
 class ShowNews extends React.Component {
     constructor(props) {
@@ -43,13 +44,19 @@ class ShowNews extends React.Component {
                         <div className="col-md-4 mb-4" key={newsItem.id}>
                             <div className="card">
                                 <img
-                                    src={newsItem.image}
+                                    src={newsItem.image || logo1}
                                     className="card-img-top"
                                     alt={newsItem.title}
+                                    onError={(e) => {
+                                        e.target.onerror = null; // Prevent infinite loop
+                                        e.target.src = logo1; // Replace with default image if error occurs
+                                    }}
+                                    style={{ height: "200px", objectFit: "cover" }}
                                 />
+
                                 <div className="card-body">
                                     <h5 className="card-title">{newsItem.title}</h5>
-                                    <p className="card-text">{newsItem.body}</p>
+                                    <p className="card-text">{newsItem.disc}</p>
                                     <div className="btn-group" role="group">
                                         <button type="button" className="btn btn-primary">View Detail</button>
                                         <button type="button" className="btn btn-warning">Edit</button>
