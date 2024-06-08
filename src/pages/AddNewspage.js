@@ -34,8 +34,8 @@ class AddNewsPage extends React.Component {
                 description,
                 image,
                 location: [
-                     parseFloat(latitude),
-                     parseFloat(longitude),
+                    parseFloat(latitude),
+                    parseFloat(longitude),
                 ],
                 date: new Date(),
                 techId, // Including techId in the document
@@ -47,7 +47,7 @@ class AddNewsPage extends React.Component {
             this.setState({
                 title: "",
                 image: "",
-                description: "",
+                disc: "",
                 latitude: "",
                 longitude: "",
                 techId: "", // Resetting techId
@@ -57,6 +57,21 @@ class AddNewsPage extends React.Component {
             alert("Error adding news");
         }
     }
+
+    // Function to fetch user's current location
+    fetchLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                // Set latitude and longitude in the state
+                this.setState({ latitude: latitude.toString(), longitude: longitude.toString() });
+            },
+            (error) => {
+                console.error("Error fetching location: ", error);
+                alert("Error fetching location. Please enter latitude and longitude manually.");
+            }
+        );
+    };
 
     render() {
         const { title, image, description, latitude, longitude, techId } = this.state;
@@ -102,15 +117,24 @@ class AddNewsPage extends React.Component {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="latitude" className="form-label">Latitude</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="latitude"
-                            name="latitude"
-                            value={latitude}
-                            onChange={this.handleChange}
-                            required
-                        />
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="latitude"
+                                name="latitude"
+                                value={latitude}
+                                onChange={this.handleChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={this.fetchLocation}
+                            >
+                                Use Current Location
+                            </button>
+                        </div>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="longitude" className="form-label">Longitude</label>

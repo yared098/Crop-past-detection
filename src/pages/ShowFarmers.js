@@ -12,6 +12,7 @@ class ShowFarmers extends React.Component {
             filteredFarmers: [],
             currentPage: 1,
             farmersPerPage: 10,
+            filterkm:10,
             filterLat: '',
             filterLon: '',
             filterFarmerId: '',
@@ -62,7 +63,7 @@ class ShowFarmers extends React.Component {
     };
 
     applyFilter = () => {
-        const { farmers, filterLat, filterLon, filterFarmerId, filterName } = this.state;
+        const { farmers,filterkm, filterLat, filterLon, filterFarmerId, filterName } = this.state;
 
         if (filterName && !filterLat && !filterLon) {
             const filteredFarmers = farmers.filter((farmer) =>
@@ -77,7 +78,7 @@ class ShowFarmers extends React.Component {
                     parseFloat(filterLat),
                     parseFloat(filterLon)
                 );
-                return distance <= 100; // Assuming distance is calculated in kilometers
+                return distance <= filterkm; // Assuming distance is calculated in kilometers
             });
             this.setState({ filteredFarmers, currentPage: 1 });
         } else if (filterLat && filterLon && filterName) {
@@ -109,6 +110,20 @@ class ShowFarmers extends React.Component {
         const distance = R * c;
         return distance;
     };
+    // Function to fetch user's current location
+    fetchLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                // Set latitude and longitude in the state filterLat
+                this.setState({ filterLat: latitude.toString(), filterLon: longitude.toString() });
+            },
+            (error) => {
+                console.error("Error fetching location: ", error);
+                alert("Error fetching location. Please enter latitude and longitude manually.");
+            }
+        );
+    };
 
     handleViewProfile = (farmer) => {
         this.setState({ selectedFarmer: farmer });
@@ -120,7 +135,7 @@ class ShowFarmers extends React.Component {
         const indexOfLastFarmer = currentPage * farmersPerPage;
         const indexOfFirstFarmer = indexOfLastFarmer - farmersPerPage;
         const currentFarmers = filteredFarmers.slice(indexOfFirstFarmer, indexOfLastFarmer);
-
+    
         return (
             <div className="container-fluid">
                 <div className="row">
@@ -133,16 +148,20 @@ class ShowFarmers extends React.Component {
                                     <th>ID</th>
                                     <th>Phone</th>
                                     <th>Location</th>
+                                    <th>Farmer Id</th>
+                                    <th>Area Km </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentFarmers.map((farmer) => (
-                                    <tr key={farmer.id}>
-                                        <td>{farmer.name}</td>
+                                    <tr key={farmer.deviceId}>
+                                        <td>{farmer.deviceId}</td>
                                         <td>{farmer.id}</td>
                                         <td>{farmer.phoneNumber}</td>
                                         <td>{farmer.location}</td>
+                                        <td>{farmer.deviceId}</td>
+                                        <td>{farmer.area} km </td>
                                         <td>
                                             <button
                                                 className="btn btn-danger"
@@ -154,7 +173,7 @@ class ShowFarmers extends React.Component {
                                                 className="btn btn-primary"
                                                 onClick={() => this.handleViewProfile(farmer)}
                                             >
-                                                 Profile
+                                                Profile
                                             </button>
                                         </td>
                                     </tr>
@@ -196,6 +215,22 @@ class ShowFarmers extends React.Component {
                             onChange={this.handleFilterChange}
                             className="form-control mb-2"
                         />
+                         <input
+                            type="text"
+                            placeholder="Raduis KM"
+                            name="filterkm"
+                            value={this.state.filterkm}
+                            onChange={this.handleFilterChange}
+                            className="form-control mb-2"
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={this.fetchLocation}
+                        >
+                            Use Current Location
+                        </button>
+                        <hr />
                         <input
                             type="text"
                             placeholder="Farmer ID"
@@ -220,6 +255,7 @@ class ShowFarmers extends React.Component {
             </div>
         );
     }
+    
 }
 
 export default adminLayout(ShowFarmers);
