@@ -90,7 +90,20 @@ class ShowDetectPage extends React.Component {
         });
         this.setState({ filteredDetects, currentPage: 1 });
     };
-
+    // Function to fetch user's current location
+    fetchLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                // Set latitude and longitude in the state filterLat
+                this.setState({ filterLat: latitude.toString(), filterLon: longitude.toString() });
+            },
+            (error) => {
+                console.error("Error fetching location: ", error);
+                alert("Error fetching location. Please enter latitude and longitude manually.");
+            }
+        );
+    };
     render() {
         const { filteredDetects, currentPage, detectsPerPage, showModal, selectedDetect, filterLat, filterLon, filterRadius } = this.state;
         const indexOfLastDetect = currentPage * detectsPerPage;
@@ -125,6 +138,13 @@ class ShowDetectPage extends React.Component {
                                     className="form-control"
                                 />
                             </div>
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={this.fetchLocation}
+                            >
+                                Use Current Location
+                            </button>
                             <div className="mb-3">
                                 <label htmlFor="filterRadius" className="form-label">Radius (km)</label>
                                 <input
@@ -151,9 +171,9 @@ class ShowDetectPage extends React.Component {
                                     <th>Crop ID</th>
                                     <th>Latitude</th>
                                     <th>Longitude</th>
-                                    <th>Results</th>
-                                    <th>State</th>
-                                    <th>Suggestion</th>
+                                    <th>Status</th>
+                                    <th>Result</th>
+                                    {/* <th>Suggestion</th> */}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -162,20 +182,21 @@ class ShowDetectPage extends React.Component {
                                     <tr key={detect.id}>
                                         <td>{detect.cropType}</td>
                                         <td>{detect.cropAge}</td>
-                                        <td>{detect.cropId}</td>
+                                        <td>{detect.id}</td>
                                         <td>{detect.latitude}</td>
                                         <td>{detect.longitude}</td>
-                                        <td>{detect.detectPersent}</td>
                                         <td>{detect.result}</td>
-                                        <td>{detect.suggestion}</td>
+                                        <td>{detect.confidence.toFixed(2)}</td>
+                                        <td>{detect.detectPersent}</td>
+                                        {/* <td>{detect.suggestion}</td> */}
                                         <td>
-                                            <button 
+                                            <button
                                                 className="btn btn-danger"
                                                 onClick={() => this.handleDelete(detect.id)}
                                             >
                                                 Delete
                                             </button>
-                                            <button 
+                                            <button
                                                 className="btn btn-primary"
                                                 onClick={() => this.handleShowModal(detect)}
                                             >
@@ -187,16 +208,16 @@ class ShowDetectPage extends React.Component {
                             </tbody>
                         </table>
                         <div className="d-flex justify-content-between">
-                            <button 
-                                className="btn btn-primary" 
-                                onClick={this.handlePreviousPage} 
+                            <button
+                                className="btn btn-primary"
+                                onClick={this.handlePreviousPage}
                                 disabled={currentPage === 1}
                             >
                                 Previous
                             </button>
-                            <button 
-                                className="btn btn-primary" 
-                                onClick={this.handleNextPage} 
+                            <button
+                                className="btn btn-primary"
+                                onClick={this.handleNextPage}
                                 disabled={indexOfLastDetect >= filteredDetects.length}
                             >
                                 Next
@@ -205,12 +226,19 @@ class ShowDetectPage extends React.Component {
                     </div>
                 </div>
                 {selectedDetect && (
-                    <Modal show={showModal} onHide={this.handleCloseModal}>
+                    <Modal show={showModal} onHide={this.handleCloseModal} style={{ height: '3000px' }}>
                         <Modal.Header closeButton>
                             <Modal.Title>Crop Details</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                             <p><strong>Crop Type: </strong>{selectedDetect.cropType}</p>
+                            <p><strong>Crop Age: </strong>{selectedDetect.cropAge}</p>
+                            <p><strong>ID: </strong>{selectedDetect.id}</p>
+                            <p><strong>Latitude: </strong>{selectedDetect.latitude}</p>
+                            <p><strong>Longitude: </strong>{selectedDetect.longitude}</p>
+                            <p><strong>Result: </strong>{selectedDetect.result}</p>
+                            <p><strong>Confidence: </strong>{selectedDetect.confidence.toFixed(2)}</p>
+                            <p><strong>Detection Percentage: </strong>{selectedDetect.detectPersent}</p>
                             <img src={selectedDetect.image} alt="Crop" style={{ width: '100%', height: 'auto' }} />
                         </Modal.Body>
                         <Modal.Footer>
@@ -220,6 +248,7 @@ class ShowDetectPage extends React.Component {
                         </Modal.Footer>
                     </Modal>
                 )}
+
             </div>
         );
     }
