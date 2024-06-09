@@ -66,7 +66,7 @@ class ProfilePage extends React.Component {
 
     handleSave = async () => {
         const { profile } = this.state;
-        const profileRef = doc(db, "users", profile.uid); // Assumes 'uid' is the document ID
+        const profileRef = doc(db, "officers", profile.uid); // Assumes 'uid' is the document ID
         try {
             await updateDoc(profileRef, profile);
             this.setState({ isEditing: false });

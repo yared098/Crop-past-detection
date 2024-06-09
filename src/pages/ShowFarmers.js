@@ -156,7 +156,7 @@ class ShowFarmers extends React.Component {
                             <tbody>
                                 {currentFarmers.map((farmer) => (
                                     <tr key={farmer.deviceId}>
-                                        <td>{farmer.deviceId}</td>
+                                        <td>{farmer.name}</td>
                                         <td>{farmer.id}</td>
                                         <td>{farmer.phoneNumber}</td>
                                         <td>{farmer.location}</td>

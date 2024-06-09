@@ -4,7 +4,7 @@ import { db } from '../firebase-config'; // Import Firebase configuration
 import BarGraph from './BarGraph'; // Import the BarGraph component
 import { Pie } from 'react-chartjs-2';
 import { Chart, ArcElement, registerables } from 'chart.js';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore'; // Import collection and onSnapshot
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore'; // Import required Firestore functions
 
 // Register the required chart elements
 Chart.register(...registerables, ArcElement);
@@ -28,7 +28,12 @@ class ShowNews1 extends React.Component {
             onSnapshot(newsRef, (querySnapshot) => {
                 const data = [];
                 querySnapshot.forEach((doc) => {
-                    data.push({ id: doc.id, ...doc.data() });
+                    const newsData = doc.data();
+                    // If `date` is a Firebase Timestamp, convert it to a readable format
+                    if (newsData.date && newsData.date.seconds) {
+                        newsData.date = new Date(newsData.date.seconds * 1000).toLocaleString();
+                    }
+                    data.push({ id: doc.id, ...newsData });
                 });
                 this.setState({ newsItems: data });
             });
@@ -42,10 +47,10 @@ class ShowNews1 extends React.Component {
 
         return (
             <div style={{ height: 'calc(100vh - 40px)', overflowY: 'auto', padding: '20px' }}>
-                <h2>Next Side</h2>
+                <h2>Recent news</h2>
                 {newsItems.map((item, index) => (
                     <div key={item.id} style={{ marginBottom: '20px', borderBottom: '1px solid #ddd' }}>
-                        <h3>{item.title}</h3>
+                        <h3>{item.disc}</h3>
                         <p>{item.cropType}</p>
                         <p style={{ fontSize: '0.8rem', color: '#777' }}>Time: {item.date}</p>
                     </div>
@@ -63,7 +68,7 @@ class DashboardPage extends React.Component {
             area: 2000, // Static value
             technicians: 0,
             status: 90, // Static value
-            barGraphData: [10, 20, 30, 40] // Example data, replace it with your actual data
+            barGraphData: [0, 0, 0, 0] // Placeholder data
         };
     }
 
@@ -80,12 +85,21 @@ class DashboardPage extends React.Component {
             const techniciansCollectionRef = collection(db, 'officers');
             const techniciansSnapshot = await getDocs(techniciansCollectionRef);
             const techniciansCount = techniciansSnapshot.size;
-            //get crop type maize
-            
 
+            // Query the 'Detection' collection
+            const dbHealthyQuery = query(collection(db, 'Detection'), where("result", "==", "Maize Healthy"));
+            const dbHealthySnapshot = await getDocs(dbHealthyQuery);
+            const dbbHealthycount = dbHealthySnapshot.size;
+
+            const dbBlightQuery = query(collection(db, 'Detection'), where("result", "==", "Maize Leaf Blight"));
+            const dbBlightSnapshot = await getDocs(dbBlightQuery);
+            const dbbBlightcount = dbBlightSnapshot.size;
+
+            // Update state with the fetched data
             this.setState({
                 farmers: farmersCount,
-                technicians: techniciansCount
+                technicians: techniciansCount,
+                barGraphData: [0, 0, dbbHealthycount, dbbBlightcount,10]
             });
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -104,14 +118,28 @@ class DashboardPage extends React.Component {
                 }
             ]
         };
+    }
+
+    render() {
+        const { farmers, area, technicians, status, barGraphData } = this.state;
+        const pieData = {
+            labels: ['Maize', 'Aphide', 'Red', 'White'],
+            datasets: [
+                {
+                    data: [70, 20, 5, 5],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff'],
+                    hoverBackgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff']
+                }
+            ]
+        };
 
         return (
             <div style={{ display: 'flex', backgroundColor: '#f0f0f0', minHeight: '100vh', padding: '20px' }}>
                 <div style={{ flex: '1' }}>
-                    <div className="row">
-                        <div className="col-md-3 mb-3">
-                            <div className="card bg-primary text-white">
-                                <div className="card-body">
+                    <div className="row" >
+                        <div className="col-md-3 mb-3" >
+                            <div className="card bg-primary text-white" >
+                                <div className="card-body"  >
                                     <h5 className="card-title">Farmers</h5>
                                     <p className="card-text">{farmers}</p>
                                 </div>
