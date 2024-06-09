@@ -1,6 +1,8 @@
 import React from "react";
-import { db } from "../firebase-config";
+import { db, storage, auth } from "../firebase-config"; // Import Firebase Auth
 import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { onAuthStateChanged } from "firebase/auth"; // Import Auth state listener
 import adminLayout from "../hoc/adminLayout";
 
 class AddNewsPage extends React.Component {
@@ -8,15 +10,28 @@ class AddNewsPage extends React.Component {
         super(props);
         this.state = {
             title: "",
-            image: "",
-            description: "",
+            image: null,
+            disc: "",
             latitude: "",
             longitude: "",
-            techId: "", // Adding techId to the state
+            techId: "", // Initializing techId
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleImageChange = this.handleImageChange.bind(this);
+    }
+
+    componentDidMount() {
+        // Set up an authentication state listener to get the current user's ID
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                this.setState({ techId: user.uid });
+            } else {
+                // Handle unauthenticated state
+                console.log("User is not authenticated");
+            }
+        });
     }
 
     handleChange(event) {
@@ -24,21 +39,34 @@ class AddNewsPage extends React.Component {
         this.setState({ [name]: value });
     }
 
+    handleImageChange(event) {
+        this.setState({ image: event.target.files[0] });
+    }
+
     async handleSubmit(event) {
         event.preventDefault();
-        const { title, image, description, latitude, longitude, techId } = this.state;
+        const { title, image, disc, latitude, longitude, techId } = this.state;
+
+        let imageUrl = "";
+
+        if (image) {
+            const storageRef = ref(storage, `images/${Date.now()}_${image.name}`);
+            await uploadBytes(storageRef, image);
+            imageUrl = await getDownloadURL(storageRef);
+        }
+
         try {
             const docRef = await addDoc(collection(db, "News"), {
-                newsId: Date.now().toString(), // Using timestamp as a unique ID
+                newsId: Date.now().toString(),
                 title,
-                description,
-                image,
+                disc,
+                image: imageUrl,
                 location: [
                     parseFloat(latitude),
                     parseFloat(longitude),
                 ],
                 date: new Date(),
-                techId, // Including techId in the document
+                techId, // Using the techId from state
             });
             console.log("Document written with ID: ", docRef.id);
             alert("News added successfully");
@@ -46,7 +74,7 @@ class AddNewsPage extends React.Component {
             // Reset form
             this.setState({
                 title: "",
-                image: "",
+                image: null,
                 disc: "",
                 latitude: "",
                 longitude: "",
@@ -63,7 +91,6 @@ class AddNewsPage extends React.Component {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                // Set latitude and longitude in the state
                 this.setState({ latitude: latitude.toString(), longitude: longitude.toString() });
             },
             (error) => {
@@ -74,7 +101,7 @@ class AddNewsPage extends React.Component {
     };
 
     render() {
-        const { title, image, description, latitude, longitude, techId } = this.state;
+        const { title, disc, latitude, longitude, techId } = this.state;
         return (
             <div className="container mt-5">
                 <h2>Add News</h2>
@@ -92,25 +119,24 @@ class AddNewsPage extends React.Component {
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="image" className="form-label">Image URL</label>
+                        <label htmlFor="image" className="form-label">Image</label>
                         <input
-                            type="text"
+                            type="file"
                             className="form-control"
                             id="image"
                             name="image"
-                            value={image}
-                            onChange={this.handleChange}
+                            onChange={this.handleImageChange}
                             required
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="description" className="form-label">Description</label>
+                        <label htmlFor="disc" className="form-label">Description</label>
                         <textarea
                             className="form-control"
-                            id="description"
-                            name="description"
+                            id="disc"
+                            name="disc"
                             rows="3"
-                            value={description}
+                            value={disc}
                             onChange={this.handleChange}
                             required
                         ></textarea>
@@ -144,18 +170,6 @@ class AddNewsPage extends React.Component {
                             id="longitude"
                             name="longitude"
                             value={longitude}
-                            onChange={this.handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="techId" className="form-label">Technician ID</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="techId"
-                            name="techId"
-                            value={techId}
                             onChange={this.handleChange}
                             required
                         />

@@ -125,12 +125,12 @@ class DashboardPage extends React.Component {
     }
 
     render() {
-        const { farmers, area, technicians, status, barGraphData } = this.state;
+        const { farmers, area, technicians, status, barGraphData ,dbbHealthycount,dbbBlightcount} = this.state;
         const pieData = {
-            labels: ['Maize', 'Aphide', 'Red', 'White'],
+            labels: ['Maize', 'Aphide', 'corn', 'White'],
             datasets: [
                 {
-                    data: [70, 20, 5, 5],
+                    data: [dbbHealthycount, dbbBlightcount, 5, 5],
                     backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff'],
                     hoverBackgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff']
                 }
