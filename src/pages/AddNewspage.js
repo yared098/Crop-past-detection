@@ -107,6 +107,7 @@ class AddNewsPage extends React.Component {
                 <h2>Add News</h2>
                 <form onSubmit={this.handleSubmit}>
                     <div className="mb-3">
+                        <label>tech id { techId}</label>
                         <label htmlFor="title" className="form-label">News Title</label>
                         <input
                             type="text"

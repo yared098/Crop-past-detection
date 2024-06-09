@@ -1,30 +1,50 @@
 import React from "react";
-import { db } from "../../firebase-config";
-import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import { db, auth } from "../../firebase-config";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import userProfileLayout from "../../hoc/userProfileLayout";
-import { auth } from "../../firebase-config";
 
 class ProfilePage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            profile: {},
+            profile: {
+                name: "",
+                email: "",
+                imageurl: "",
+                location: "",
+                latitude: "",
+                longitude: ""
+            },
             forgotPasswordEmail: "",
             isEditing: false,
+            userId: ""
         };
     }
 
     componentDidMount() {
-        const profileRef = collection(db, "officers");
-
-        onSnapshot(profileRef, (snapshot) => {
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                this.setState({ profile: data });
-            });
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const userId = user.uid;
+                this.setState({ userId });
+                this.fetchProfile(userId);
+            } else {
+                // Handle the case where there is no logged-in user
+                console.log("No user is signed in.");
+            }
         });
     }
+
+    fetchProfile = async (userId) => {
+        const profileRef = doc(db, "officers", userId);
+        const profileDoc = await getDoc(profileRef);
+
+        if (profileDoc.exists()) {
+            this.setState({ profile: profileDoc.data() });
+        } else {
+            console.log("No such document!");
+        }
+    };
 
     handleForgotPassword = (e) => {
         e.preventDefault();
@@ -65,8 +85,8 @@ class ProfilePage extends React.Component {
     };
 
     handleSave = async () => {
-        const { profile } = this.state;
-        const profileRef = doc(db, "officers", profile.uid); // Assumes 'uid' is the document ID
+        const { profile, userId } = this.state;
+        const profileRef = doc(db, "officers", userId);
         try {
             await updateDoc(profileRef, profile);
             this.setState({ isEditing: false });
@@ -77,8 +97,31 @@ class ProfilePage extends React.Component {
         }
     };
 
+    fetchLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                this.setState({
+                    profile: {
+                        ...this.state.profile,
+                        latitude: latitude.toString(),
+                        longitude: longitude.toString()
+                    }
+                });
+            },
+            (error) => {
+                console.error("Error fetching location: ", error);
+                alert("Error fetching location. Please enter latitude and longitude manually.");
+            }
+        );
+    };
+
     render() {
         const { profile, forgotPasswordEmail, isEditing } = this.state;
+
+        if (!profile) {
+            return <div>Loading...</div>;
+        }
 
         return (
             <div className="container">
@@ -125,40 +168,55 @@ class ProfilePage extends React.Component {
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="location" className="form-label">Location</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="location"
-                                            name="location"
-                                            value={profile.location || ''}
-                                            readOnly={!isEditing}
-                                            onChange={this.handleChange}
-                                        />
+                                        <label htmlFor="latitude" className="form-label">Latitude</label>
+                                        <div className="input-group">
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                id="latitude"
+                                                name="latitude"
+                                                value={profile.latitude || ''}
+                                                readOnly={!isEditing}
+                                                onChange={this.handleChange}
+                                            />
+                                            {isEditing && (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-secondary"
+                                                    onClick={this.fetchLocation}
+                                                >
+                                                    Use Current Location
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="officerId" className="form-label">Officer ID</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="officerId"
-                                            name="officerId"
-                                            value={profile.officerId || ''}
-                                            readOnly={!isEditing}
-                                            onChange={this.handleChange}
-                                        />
+                                        <label htmlFor="longitude" className="form-label">Longitude</label>
+                                        <div className="input-group">
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                id="longitude"
+                                                name="longitude"
+                                                value={profile.longitude || ''}
+                                                readOnly={!isEditing}
+                                                onChange={this.handleChange}
+                                            />
+                                            {isEditing && (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-secondary"
+                                                    onClick={this.fetchLocation}
+                                                >
+                                                    Use Current Location
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="uid" className="form-label">UID</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="uid"
-                                            name="uid"
-                                            value={profile.uid || ''}
-                                            readOnly
-                                        />
+                                       
                                     </div>
+                                    
                                     {isEditing ? (
                                         <button type="button" className="btn btn-success" onClick={this.handleSave}>
                                             Save
@@ -210,7 +268,7 @@ const Footer = () => (
     <footer className="mt-5">
         <div className="row justify-content-center">
             <div className="col-md-6 text-center">
-                <p>© 2024 Your Company. All Rights Reserved.</p>
+                <p>© safe crop 2024 Your Company. All Rights Reserved.</p>
             </div>
         </div>
     </footer>

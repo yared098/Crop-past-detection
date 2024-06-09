@@ -19,6 +19,7 @@ class RegistrationPage extends React.Component {
             location: "",
             role: "Admin",
             error: null,
+            name:"user",
             message: null,
         };
     }
