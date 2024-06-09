@@ -68,7 +68,9 @@ class DashboardPage extends React.Component {
             area: 2000, // Static value
             technicians: 0,
             status: 90, // Static value
-            barGraphData: [0, 0, 0, 0] // Placeholder data
+            barGraphData: [0, 0, 0, 0] ,// Placeholder data
+            dbbHealthycount: 0, // Initialize the counts in the state
+            dbbBlightcount: 0 // Initialize the counts in the state
         };
     }
 
@@ -99,7 +101,9 @@ class DashboardPage extends React.Component {
             this.setState({
                 farmers: farmersCount,
                 technicians: techniciansCount,
-                barGraphData: [0, 0, dbbHealthycount, dbbBlightcount,10]
+                barGraphData: [0, 0, dbbHealthycount, dbbBlightcount,10],
+                dbbHealthycount, // Set the counts in the state
+                dbbBlightcount // Set the counts in the state
             });
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -107,12 +111,12 @@ class DashboardPage extends React.Component {
     };
 
     render() {
-        const { farmers, area, technicians, status, barGraphData } = this.state;
+        const { farmers, area, technicians, status, barGraphData ,dbbHealthycount ,dbbBlightcount} = this.state;
         const pieData = {
             labels: ['Maize', 'Aphide', 'Red', 'White'],
             datasets: [
                 {
-                    data: [70, 20, 5, 5],
+                    data: [dbbHealthycount, dbbBlightcount, 0, 8],
                     backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff'],
                     hoverBackgroundColor: ['#28a745', '#ffc107', '#dc3545', '#ffffff']
                 }

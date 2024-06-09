@@ -200,7 +200,7 @@ class ShowFarmers extends React.Component {
                     <div className="col-md-3 filter-sidebar">
                         <h4>Filter by:</h4>
                         <input
-                            type="text"
+                           type="number"
                             placeholder="Latitude"
                             name="filterLat"
                             value={this.state.filterLat}
@@ -208,7 +208,7 @@ class ShowFarmers extends React.Component {
                             className="form-control mb-2"
                         />
                         <input
-                            type="text"
+                            type="number"
                             placeholder="Longitude"
                             name="filterLon"
                             value={this.state.filterLon}
@@ -216,7 +216,7 @@ class ShowFarmers extends React.Component {
                             className="form-control mb-2"
                         />
                          <input
-                            type="text"
+                            type="number"
                             placeholder="Raduis KM"
                             name="filterkm"
                             value={this.state.filterkm}

@@ -119,7 +119,7 @@ class AddNewsPage extends React.Component {
                         <label htmlFor="latitude" className="form-label">Latitude</label>
                         <div className="input-group">
                             <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 id="latitude"
                                 name="latitude"
@@ -139,7 +139,7 @@ class AddNewsPage extends React.Component {
                     <div className="mb-3">
                         <label htmlFor="longitude" className="form-label">Longitude</label>
                         <input
-                            type="text"
+                            type="number"
                             className="form-control"
                             id="longitude"
                             name="longitude"
