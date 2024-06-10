@@ -116,7 +116,7 @@ class Sidebar extends React.Component {
                     </ul>
                 </PerfectScrollbar>
                 <div className="dropdown fixed-bottom-dropdown" style={{ backgroundColor: '#80C855' }}>
-                    <a href="#" className="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="/" className="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src={logo1} alt="" width="32" height="32" className="rounded-circle me-2" />
                         {user && (
                             <>

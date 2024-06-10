@@ -30,6 +30,7 @@ class LoginPage extends React.Component {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             this.setState({ message: "Login successful!", error: null });
+            console.log(user)
 
             // Use the navigate prop for navigation
             this.props.navigate('/');

@@ -63,7 +63,7 @@ class ShowFarmers extends React.Component {
     };
 
     applyFilter = () => {
-        const { farmers,filterkm, filterLat, filterLon, filterFarmerId, filterName } = this.state;
+        const { farmers,filterkm, filterLat, filterLon, filterName } = this.state;
 
         if (filterName && !filterLat && !filterLon) {
             const filteredFarmers = farmers.filter((farmer) =>

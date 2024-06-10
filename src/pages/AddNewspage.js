@@ -43,48 +43,88 @@ class AddNewsPage extends React.Component {
         this.setState({ image: event.target.files[0] });
     }
 
+    // async handleSubmit(event) {
+    //     event.preventDefault();
+    //     const { title, image, disc, latitude, longitude, techId } = this.state;
+
+    //     let imageUrl = "";
+
+    //     if (image) {
+    //         const storageRef = ref(storage, `images/${Date.now()}_${image.name}`);
+    //         await uploadBytes(storageRef, image);
+    //         imageUrl = await getDownloadURL(storageRef);
+    //     }
+
+    //     try {
+    //         const docRef = await addDoc(collection(db, "News"), {
+    //             newsId: Date.now().toString(),
+    //             title,
+    //             disc,
+    //             image: imageUrl,
+    //             location: [
+    //                 parseFloat(latitude),
+    //                 parseFloat(longitude),
+    //             ],
+    //             date: new Date(),
+    //             techId, // Using the techId from state
+    //         });
+    //         console.log("Document written with ID: ", docRef.id);
+    //         alert("News added successfully");
+
+    //         // Reset form
+    //         this.setState({
+    //             title: "",
+    //             image: null,
+    //             disc: "",
+    //             location:[0.0,0.8],
+    //             techId: "", // Resetting techId
+    //         });
+    //     } catch (error) {
+    //         console.error("Error adding document: ", error);
+    //         alert("Error adding news");
+    //     }
+    // }
     async handleSubmit(event) {
         event.preventDefault();
         const { title, image, disc, latitude, longitude, techId } = this.state;
-
+      
         let imageUrl = "";
-
+      
         if (image) {
-            const storageRef = ref(storage, `images/${Date.now()}_${image.name}`);
-            await uploadBytes(storageRef, image);
-            imageUrl = await getDownloadURL(storageRef);
+          const storageRef = ref(storage, `images/${Date.now()}_${image.name}`);
+          await uploadBytes(storageRef, image);
+          imageUrl = await getDownloadURL(storageRef);
         }
-
+      
         try {
-            const docRef = await addDoc(collection(db, "News"), {
-                newsId: Date.now().toString(),
-                title,
-                disc,
-                image: imageUrl,
-                location: [
-                    parseFloat(latitude),
-                    parseFloat(longitude),
-                ],
-                date: new Date(),
-                techId, // Using the techId from state
-            });
-            console.log("Document written with ID: ", docRef.id);
-            alert("News added successfully");
-
-            // Reset form
-            this.setState({
-                title: "",
-                image: null,
-                disc: "",
-                latitude: "",
-                longitude: "",
-                techId: "", // Resetting techId
-            });
+          const docRef = await addDoc(collection(db, "News"), {
+            newsId: Date.now().toString(),
+            title,
+            disc,
+            image: imageUrl,
+            location: {
+                latitude: parseFloat(latitude),
+                longitude: parseFloat(longitude)
+              },
+            date: new Date(),
+            techId, // Using the techId from state
+          });
+          console.log("Document written with ID: ", docRef.id);
+          alert("News added successfully");
+      
+          // Reset form
+          this.setState({
+            title: "",
+            image: null,
+            disc: "",
+            location: [0.0, 0.8],
+            techId: "", // Resetting techId
+          });
         } catch (error) {
-            console.error("Error adding document: ", error);
-            alert("Error adding news");
+          console.error("Error adding document: ", error);
+          alert("Error adding news");
         }
-    }
+      }
 
     // Function to fetch user's current location
     fetchLocation = () => {
@@ -101,13 +141,13 @@ class AddNewsPage extends React.Component {
     };
 
     render() {
-        const { title, disc, latitude, longitude, techId } = this.state;
+        const { title, disc, latitude, longitude } = this.state;
         return (
             <div className="container mt-5">
                 <h2>Add News</h2>
                 <form onSubmit={this.handleSubmit}>
                     <div className="mb-3">
-                        <label>tech id { techId}</label>
+                        {/* <label>tech id { techId}</label> */}
                         <label htmlFor="title" className="form-label">News Title</label>
                         <input
                             type="text"

@@ -1,6 +1,9 @@
 import React from "react";
-import { db, auth } from "../../firebase-config";
+// import { db, auth } from "../../firebase-config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db, auth, storage } from "../../firebase-config";
+// import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import userProfileLayout from "../../hoc/userProfileLayout";
 
 class ProfilePage extends React.Component {
@@ -116,6 +119,34 @@ class ProfilePage extends React.Component {
         );
     };
 
+    handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        const { userId } = this.state;
+
+        try {
+            // Create a storage reference with the filename
+            const storageRef = ref(storage, `profile_images/${userId}/${file.name}`);
+
+            // Upload file to Firebase Storage
+            await uploadBytes(storageRef, file);
+
+            // Get the download URL of the uploaded image
+            const imageUrl = await getDownloadURL(storageRef);
+
+            this.setState({
+                profile: {
+                    ...this.state.profile,
+                    imageurl: imageUrl,
+                },
+            });
+
+            alert("Image uploaded successfully!");
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+            alert("An error occurred while uploading the image. Please try again later.");
+        }
+    };
+
     render() {
         const { profile, forgotPasswordEmail, isEditing } = this.state;
 
@@ -125,11 +156,18 @@ class ProfilePage extends React.Component {
 
         return (
             <div className="container">
-                <div className="row justify-content-center mt-5">
-                    <div className="col-md-6">
-                        <div className="card">
-                            <div className="card-body">
-                                <h5 className="card-title">Personal Info</h5>
+            <div className="row justify-content-center mt-5">
+              <div className="col-md-6">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <div className="profile-image">
+                      {profile.imageurl ? (
+                        <img src={profile.imageurl} alt="Profile" className="rounded-circle" />
+                      ) : (
+                        <div className="no-image">No Image</div>
+                      )}
+                    </div>
+                    <h5 className="card-title mt-3">Personal Info</h5>
                                 <form>
                                     <div className="mb-3">
                                         <label htmlFor="name" className="form-label">Name</label>
@@ -190,6 +228,20 @@ class ProfilePage extends React.Component {
                                             )}
                                         </div>
                                     </div>
+
+
+                                    <div className="mb-3">
+                                        <label htmlFor="image" className="form-label">Image</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            id="image"
+                                            name="image"
+                                            accept="image/*"
+                                            onChange={this.handleImageUpload}
+                                        />
+                                    </div>
+
                                     <div className="mb-3">
                                         <label htmlFor="longitude" className="form-label">Longitude</label>
                                         <div className="input-group">
@@ -214,9 +266,9 @@ class ProfilePage extends React.Component {
                                         </div>
                                     </div>
                                     <div className="mb-3">
-                                       
+
                                     </div>
-                                    
+
                                     {isEditing ? (
                                         <button type="button" className="btn btn-success" onClick={this.handleSave}>
                                             Save

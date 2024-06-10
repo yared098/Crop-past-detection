@@ -25,7 +25,7 @@ class Header extends React.Component {
                                 </a>
                                 <div className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a className="dropdown-item" href="/profile">Profile</a>
-                                    <a className="dropdown-item" href="/settings">Settings</a>
+                                    {/* <a className="dropdown-item" href="/settings">Settings</a> */}
                                     <div className="dropdown-divider"></div>
                                     <a className="dropdown-item" href="/login">Logout</a>
                                 </div>

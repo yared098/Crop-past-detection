@@ -19,7 +19,8 @@ class RegistrationPage extends React.Component {
             location: "",
             role: "Admin",
             error: null,
-            name:"user",
+            name:"edit name",
+            imageurl:'',
             message: null,
         };
     }
@@ -30,7 +31,7 @@ class RegistrationPage extends React.Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const { email, password, confirmPassword, phone, location, role } = this.state;
+        const { email, password, confirmPassword, phone, location, role,name,imageurl } = this.state;
 
         if (password !== confirmPassword) {
             this.setState({ error: "Passwords do not match!", message: null });
@@ -47,6 +48,8 @@ class RegistrationPage extends React.Component {
                 location,
                 role,
                 createdAt: serverTimestamp(),
+                name,
+                imageurl
             });
 
             this.setState({ message: "User registered successfully!", error: null });
