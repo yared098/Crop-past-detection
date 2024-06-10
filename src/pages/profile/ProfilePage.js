@@ -156,18 +156,18 @@ class ProfilePage extends React.Component {
 
         return (
             <div className="container">
-            <div className="row justify-content-center mt-5">
-              <div className="col-md-6">
-                <div className="card">
-                  <div className="card-body text-center">
-                    <div className="profile-image">
-                      {profile.imageurl ? (
-                        <img src={profile.imageurl} alt="Profile" className="rounded-circle" />
-                      ) : (
-                        <div className="no-image">No Image</div>
-                      )}
-                    </div>
-                    <h5 className="card-title mt-3">Personal Info</h5>
+                <div className="row justify-content-center mt-5">
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-body text-center">
+                                <div className="profile-image">
+                                    {profile.imageurl ? (
+                                        <img src={profile.imageurl} alt="Profile" className="rounded-circle" />
+                                    ) : (
+                                        <div className="no-image">No Image</div>
+                                    )}
+                                </div>
+                                <h5 className="card-title mt-3">Personal Info</h5>
                                 <form>
                                     <div className="mb-3">
                                         <label htmlFor="name" className="form-label">Name</label>
@@ -190,7 +190,7 @@ class ProfilePage extends React.Component {
                                             name="email"
                                             value={profile.email || ''}
                                             readOnly={!isEditing}
-                                            onChange={this.handleChange}
+                                           // onChange={this.handleChange}
                                         />
                                     </div>
                                     <div className="mb-3">
