@@ -13,6 +13,7 @@
     "date-fns": "^3.6.0",
     "firebase": "^10.12.0",
     "font-awesome": "^4.7.0",
+    "jspdf": "^2.5.1",
     "pico": "^0.1.17",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
